@@ -8,9 +8,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Settings as SettingsIcon, Palette, Bell, Download, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useTheme } from 'next-themes';
 
 export const Settings: React.FC = () => {
   const { toast } = useToast();
+  const { theme, setTheme } = useTheme();
   const [thresholds, setThresholds] = useState({
     engineTempWarning: 95,
     engineTempDanger: 105,
@@ -26,7 +28,7 @@ export const Settings: React.FC = () => {
     soundEnabled: true
   });
 
-  const [theme, setTheme] = useState<'light' | 'dark' | 'system'>('dark');
+  
 
   const handleThresholdChange = (key: keyof typeof thresholds, value: number) => {
     setThresholds(prev => ({
@@ -225,7 +227,13 @@ export const Settings: React.FC = () => {
                 <div className="grid grid-cols-3 gap-3 mt-2">
                   <Button
                     variant={theme === 'light' ? 'default' : 'outline'}
-                    onClick={() => setTheme('light')}
+                    onClick={() => {
+                      setTheme('light');
+                      toast({
+                        title: "Theme changed",
+                        description: "Switched to light theme",
+                      });
+                    }}
                     className="h-20 flex-col gap-2"
                   >
                     ☀️
@@ -233,7 +241,13 @@ export const Settings: React.FC = () => {
                   </Button>
                   <Button
                     variant={theme === 'dark' ? 'default' : 'outline'}
-                    onClick={() => setTheme('dark')}
+                    onClick={() => {
+                      setTheme('dark');
+                      toast({
+                        title: "Theme changed",
+                        description: "Switched to dark theme",
+                      });
+                    }}
                     className="h-20 flex-col gap-2"
                   >
                     🌙
@@ -241,7 +255,13 @@ export const Settings: React.FC = () => {
                   </Button>
                   <Button
                     variant={theme === 'system' ? 'default' : 'outline'}
-                    onClick={() => setTheme('system')}
+                    onClick={() => {
+                      setTheme('system');
+                      toast({
+                        title: "Theme changed",
+                        description: "Following system theme",
+                      });
+                    }}
                     className="h-20 flex-col gap-2"
                   >
                     🌓

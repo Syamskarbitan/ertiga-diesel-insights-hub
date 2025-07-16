@@ -18,10 +18,10 @@ All colors MUST be HSL.
     --popover: 220 13% 16%;
     --popover-foreground: 210 20% 98%;
 
-    /* Turbo blue primary */
-    --primary: 212 92% 45%;
-    --primary-foreground: 210 20% 98%;
-    --primary-glow: 212 92% 65%;
+    /* Yellow primary theme */
+    --primary: 45 100% 50%;
+    --primary-foreground: 220 13% 18%;
+    --primary-glow: 45 100% 70%;
 
     --secondary: 220 13% 25%;
     --secondary-foreground: 210 20% 98%;
@@ -45,7 +45,7 @@ All colors MUST be HSL.
 
     --border: 220 13% 25%;
     --input: 220 13% 25%;
-    --ring: 212 92% 45%;
+    --ring: 45 100% 50%;
 
     --radius: 0.5rem;
 

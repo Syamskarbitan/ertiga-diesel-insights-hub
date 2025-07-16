@@ -10,6 +10,8 @@ import { TurboLogo } from './TurboLogo';
 import { AlertSystem } from './AlertSystem';
 import { Settings } from './Settings';
 import { useOBDData } from '@/hooks/useOBDData';
+import { useELM327 } from '@/hooks/useELM327';
+import { ConnectionManager } from './ConnectionManager';
 import { 
   Thermometer, 
   Battery, 
@@ -24,7 +26,8 @@ import {
   Activity,
   Settings as SettingsIcon,
   History,
-  BarChart3
+  BarChart3,
+  Cable
 } from 'lucide-react';
 
 const DashboardContent: React.FC<{
@@ -308,7 +311,8 @@ const DashboardContent: React.FC<{
 };
 
 export const Dashboard: React.FC = () => {
-  const { data, historicalData, getStatus, getVoltageStatus, isConnected } = useOBDData();
+  const { data, historicalData, getStatus, getVoltageStatus } = useOBDData();
+  const { isConnected } = useELM327();
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -320,12 +324,19 @@ export const Dashboard: React.FC = () => {
         <div className="flex items-center gap-3">
           <TurboLogo size={48} animated={data.rpm > 1000} />
           <div>
-            <h1 className="text-2xl font-bold bg-gradient-turbo bg-clip-text text-transparent">
-              GADIES
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              GAdjah Diesel Ertiga System
-            </p>
+            <img 
+              src="/lovable-uploads/3125d971-3639-4b49-9be1-c74769a884f4.png" 
+              alt="GADIES Logo" 
+              className="h-8 w-auto"
+            />
+            <div>
+              <h1 className="text-2xl font-bold bg-gradient-turbo bg-clip-text text-transparent">
+                GADIES
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                ertiGA-DiESel Jatim by Samsul
+              </p>
+            </div>
           </div>
           <div className="ml-auto flex items-center gap-2">
             <Badge variant={isConnected ? 'default' : 'destructive'}>
@@ -338,7 +349,7 @@ export const Dashboard: React.FC = () => {
 
       {/* Navigation Tabs */}
       <Tabs defaultValue="dashboard" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 bg-card">
+        <TabsList className="grid w-full grid-cols-4 bg-card">
           <TabsTrigger value="dashboard" className="flex items-center gap-2">
             <BarChart3 className="w-4 h-4" />
             Dashboard
@@ -346,6 +357,10 @@ export const Dashboard: React.FC = () => {
           <TabsTrigger value="charts" className="flex items-center gap-2">
             <Activity className="w-4 h-4" />
             Charts
+          </TabsTrigger>
+          <TabsTrigger value="connection" className="flex items-center gap-2">
+            <Cable className="w-4 h-4" />
+            Connection
           </TabsTrigger>
           <TabsTrigger value="settings" className="flex items-center gap-2">
             <SettingsIcon className="w-4 h-4" />
@@ -400,6 +415,10 @@ export const Dashboard: React.FC = () => {
               />
             </div>
           </div>
+        </TabsContent>
+
+        <TabsContent value="connection" className="p-4">
+          <ConnectionManager />
         </TabsContent>
 
         <TabsContent value="settings">
