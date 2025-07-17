@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
 
 export interface WiFiELM327Device {
@@ -7,123 +7,158 @@ export interface WiFiELM327Device {
   ip: string;
   port: number;
   connected: boolean;
+  lastConnected?: Date;
 }
 
-export function useWiFiELM327() {
+export const useWiFiELM327 = () => {
   const [currentDevice, setCurrentDevice] = useState<WiFiELM327Device | null>(null);
-  const [isConnecting, setIsConnecting] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [socket, setSocket] = useState<WebSocket | null>(null);
+  const [isConnecting, setIsConnecting] = useState(false);
+  const wsRef = useRef<WebSocket | null>(null);
   const { toast } = useToast();
 
-  const connectDevice = useCallback(async (ip: string, port: number = 35000) => {
+  // Connect to WiFi ELM327
+  const connect = useCallback(async (ip: string, port: number = 35000) => {
     setIsConnecting(true);
-    setError(null);
     
     try {
-      // Create WebSocket connection to ELM327 WiFi device
-      const ws = new WebSocket(`ws://${ip}:${port}`);
+      // Validate IP address format
+      const ipRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+      if (!ipRegex.test(ip)) {
+        throw new Error('Invalid IP address format');
+      }
+
+      // Test connection with HTTP first (most WiFi ELM327 have web interface)
+      const testResponse = await fetch(`http://${ip}:${port}`, {
+        method: 'GET',
+        mode: 'no-cors',
+        signal: AbortSignal.timeout(5000)
+      }).catch(() => null);
+
+      // Create WebSocket connection to ELM327 WiFi adapter
+      const wsUrl = `ws://${ip}:${port}`;
+      const ws = new WebSocket(wsUrl);
+      wsRef.current = ws;
       
-      ws.onopen = async () => {
-        setSocket(ws);
-        
-        // Initialize ELM327
-        await sendCommand('ATZ\r'); // Reset
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        await sendCommand('ATE0\r'); // Echo off
-        await sendCommand('ATL0\r'); // Linefeeds off
-        await sendCommand('ATS0\r'); // Spaces off
-        await sendCommand('ATSP0\r'); // Auto protocol
-        
-        const device: WiFiELM327Device = {
-          id: `wifi-${ip}:${port}`,
-          name: `ELM327 WiFi (${ip})`,
-          ip,
-          port,
-          connected: true
+      await new Promise<void>((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          reject(new Error('Connection timeout'));
+        }, 10000);
+
+        ws.onopen = () => {
+          clearTimeout(timeout);
+          
+          const device: WiFiELM327Device = {
+            id: `wifi-${ip}:${port}`,
+            name: `ELM327 WiFi (${ip})`,
+            ip,
+            port,
+            connected: true,
+            lastConnected: new Date()
+          };
+          
+          setCurrentDevice(device);
+          setIsConnected(true);
+          
+          // Initialize ELM327
+          ws.send('ATZ\r'); // Reset
+          setTimeout(() => ws.send('ATE0\r'), 500); // Echo off
+          setTimeout(() => ws.send('ATL0\r'), 1000); // Linefeeds off
+          setTimeout(() => ws.send('ATSP0\r'), 1500); // Auto protocol
+          
+          toast({
+            title: "Connected",
+            description: `Connected to ELM327 WiFi at ${ip}:${port}`,
+          });
+          
+          resolve();
         };
         
-        setCurrentDevice(device);
-        setIsConnected(true);
-        setIsConnecting(false);
+        ws.onerror = (error) => {
+          clearTimeout(timeout);
+          console.error('WebSocket error:', error);
+          reject(new Error('WebSocket connection failed'));
+        };
         
-        toast({
-          title: "Connected",
-          description: `Connected to WiFi ELM327 at ${ip}:${port}`,
-        });
-      };
+        ws.onclose = (event) => {
+          clearTimeout(timeout);
+          console.log('WebSocket closed:', event.code, event.reason);
+          setIsConnected(false);
+          setCurrentDevice(null);
+          wsRef.current = null;
+        };
+
+        ws.onmessage = (event) => {
+          console.log('ELM327 Response:', event.data);
+        };
+      });
       
-      ws.onerror = (error) => {
-        console.error('WebSocket error:', error);
-        setError('Failed to connect to WiFi ELM327');
-        setIsConnecting(false);
-        toast({
-          title: "Connection Failed",
-          description: `Failed to connect to ${ip}:${port}`,
-          variant: "destructive",
-        });
-      };
+    } catch (error) {
+      console.error('WiFi connection error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       
-      ws.onclose = () => {
-        setIsConnected(false);
-        setCurrentDevice(null);
-        setSocket(null);
-        toast({
-          title: "Disconnected",
-          description: "Disconnected from WiFi ELM327",
-        });
-      };
-      
-    } catch (e: unknown) {
-      const errorMsg = e instanceof Error ? e.message : 'Connection failed';
-      setError(errorMsg);
-      setIsConnecting(false);
       toast({
-        title: "Connection Failed",
-        description: errorMsg,
+        title: "Connection failed",
+        description: `Failed to connect to ELM327 WiFi at ${ip}:${port}. ${errorMessage}`,
         variant: "destructive",
       });
+      
+      // Clean up on error
+      if (wsRef.current) {
+        wsRef.current.close();
+        wsRef.current = null;
+      }
+    } finally {
+      setIsConnecting(false);
     }
   }, [toast]);
 
-  const disconnect = useCallback(async () => {
-    if (socket) {
-      socket.close();
-      setSocket(null);
-    }
-    setIsConnected(false);
-    setCurrentDevice(null);
-  }, [socket]);
-
+  // Send command to ELM327
   const sendCommand = useCallback(async (command: string): Promise<string> => {
-    if (!isConnected || !socket) {
-      throw new Error('Not connected to device');
+    if (!isConnected || !wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
+      throw new Error('Not connected to WiFi ELM327');
     }
     
     return new Promise((resolve, reject) => {
       const timeout = setTimeout(() => {
         reject(new Error('Command timeout'));
       }, 5000);
-      
+
       const handleMessage = (event: MessageEvent) => {
         clearTimeout(timeout);
-        socket.removeEventListener('message', handleMessage);
+        wsRef.current?.removeEventListener('message', handleMessage);
         resolve(event.data);
       };
-      
-      socket.addEventListener('message', handleMessage);
-      socket.send(command.trim().toUpperCase() + '\r');
+
+      wsRef.current.addEventListener('message', handleMessage);
+      wsRef.current.send(command);
     });
-  }, [isConnected, socket]);
+  }, [isConnected]);
+
+  // Disconnect
+  const disconnect = useCallback(() => {
+    if (wsRef.current) {
+      wsRef.current.close();
+      wsRef.current = null;
+    }
+    
+    if (currentDevice) {
+      setIsConnected(false);
+      setCurrentDevice(null);
+      
+      toast({
+        title: "Disconnected",
+        description: "Disconnected from WiFi ELM327",
+      });
+    }
+  }, [currentDevice, toast]);
 
   return {
     currentDevice,
-    isConnecting,
     isConnected,
-    error,
-    connectDevice,
-    disconnect,
-    sendCommand
+    isConnecting,
+    connect,
+    sendCommand,
+    disconnect
   };
 }

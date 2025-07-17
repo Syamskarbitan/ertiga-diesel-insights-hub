@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Primary brand colors for Ertiga Diesel Insights -->
+    <color name="colorPrimary">#1e40af</color>
+    <color name="colorPrimaryDark">#1e3a8a</color>
+    <color name="colorAccent">#3b82f6</color>
+    
+    <!-- Background colors -->
+    <color name="splash_background">#ffffff</color>
+    <color name="background_color">#f8fafc</color>
+    
+    <!-- Status bar and navigation bar -->
+    <color name="statusbar_color">#1e40af</color>
+    <color name="navigationbar_color">#1e40af</color>
+    
+    <!-- Text colors -->
+    <color name="text_primary">#1f2937</color>
+    <color name="text_secondary">#6b7280</color>
+    <color name="text_accent">#3b82f6</color>
+    
+    <!-- Alert colors -->
+    <color name="alert_success">#10b981</color>
+    <color name="alert_warning">#f59e0b</color>
+    <color name="alert_error">#ef4444</color>
+    
+    <!-- OBD-II specific colors -->
+    <color name="obd_connected">#10b981</color>
+    <color name="obd_disconnected">#ef4444</color>
+    <color name="obd_connecting">#f59e0b</color>
+    
+    <!-- Chart colors -->
+    <color name="chart_primary">#3b82f6</color>
+    <color name="chart_secondary">#10b981</color>
+    <color name="chart_tertiary">#f59e0b</color>
+    
+    <!-- Common colors -->
+    <color name="white">#ffffff</color>
+    <color name="black">#000000</color>
+    <color name="transparent">#00000000</color>
+</resources>

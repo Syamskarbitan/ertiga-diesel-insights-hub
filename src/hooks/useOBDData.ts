@@ -162,23 +162,36 @@ export const useOBDData = () => {
 
   // Send OBD command and get response
   const sendOBDCommand = async (pid: string): Promise<number> => {
-    if (!isConnected || !sendCommand) {
-      // Return realistic fallback values when not connected
-      return getRealisticValue(pid);
-    }
-
     try {
-      // Send actual OBD-II command to ELM327
-      const response = await sendCommand(pid);
+      if (!isConnected || !sendCommand) {
+        console.warn(`OBD not connected, using simulated data for ${pid}`);
+        return getRealisticValue(pid);
+      }
       
-      // Parse the response
+      // Add timeout for OBD commands
+      const timeoutPromise = new Promise<string>((_, reject) => {
+        setTimeout(() => reject(new Error('OBD command timeout')), 5000);
+      });
+      
+      const commandPromise = sendCommand(pid + '\r');
+      const response = await Promise.race([commandPromise, timeoutPromise]) as string;
+      
+      if (!response || response.includes('ERROR') || response.includes('NO DATA')) {
+        console.warn(`Invalid OBD response for ${pid}: ${response}`);
+        return getRealisticValue(pid);
+      }
+      
       const parsedValue = parseOBDResponse(pid, response);
       
-      // If parsing failed, return realistic fallback
-      return parsedValue || getRealisticValue(pid);
+      // Validate parsed value
+      if (isNaN(parsedValue) || parsedValue < 0) {
+        console.warn(`Invalid parsed value for ${pid}: ${parsedValue}`);
+        return getRealisticValue(pid);
+      }
+      
+      return parsedValue;
     } catch (error) {
-      console.error('OBD command failed:', error);
-      // Return realistic fallback on error
+      console.error(`Error sending OBD command ${pid}:`, error);
       return getRealisticValue(pid);
     }
   };

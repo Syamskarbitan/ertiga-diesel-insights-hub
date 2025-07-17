@@ -357,7 +357,7 @@ export const Dashboard = () => {
           <div className="absolute inset-0 flex items-center justify-center z-10">
             <div className="text-center space-y-4 animate-fade-in-up">
               <img 
-                src="/lovable-uploads/3125d971-3639-4b49-9be1-c74769a884f4.png" 
+                src="/gadies-logo.png" 
                 alt="GADIES Logo" 
                 className="h-24 w-auto mx-auto drop-shadow-2xl animate-pulse"
               />
@@ -398,7 +398,7 @@ export const Dashboard = () => {
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-3">
             <img 
-              src="/lovable-uploads/3125d971-3639-4b49-9be1-c74769a884f4.png" 
+              src="/gadies-logo.png" 
               alt="GADIES Logo" 
               className="h-12 w-auto drop-shadow-md"
             />

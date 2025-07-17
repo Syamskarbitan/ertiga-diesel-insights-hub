@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Circle -->
+  <circle cx="100" cy="100" r="95" fill="#1e40af" stroke="#3b82f6" stroke-width="10"/>
+  
+  <!-- Car Icon -->
+  <g transform="translate(50, 70)">
+    <!-- Car Body -->
+    <rect x="10" y="20" width="80" height="30" rx="5" fill="#ffffff"/>
+    <!-- Car Roof -->
+    <rect x="25" y="10" width="50" height="20" rx="8" fill="#ffffff"/>
+    <!-- Wheels -->
+    <circle cx="25" cy="55" r="8" fill="#374151"/>
+    <circle cx="75" cy="55" r="8" fill="#374151"/>
+    <!-- Wheel Centers -->
+    <circle cx="25" cy="55" r="3" fill="#6b7280"/>
+    <circle cx="75" cy="55" r="3" fill="#6b7280"/>
+    <!-- Headlight -->
+    <circle cx="95" cy="35" r="3" fill="#fbbf24"/>
+    <!-- Windows -->
+    <rect x="30" y="15" width="15" height="10" rx="2" fill="#1e40af"/>
+    <rect x="55" y="15" width="15" height="10" rx="2" fill="#1e40af"/>
+  </g>
+  
+  <!-- OBD Port Icon -->
+  <g transform="translate(140, 120)">
+    <rect x="0" y="0" width="20" height="15" rx="2" fill="#ffffff"/>
+    <rect x="2" y="2" width="16" height="11" rx="1" fill="#1e40af"/>
+    <!-- Connector pins -->
+    <rect x="4" y="4" width="2" height="3" fill="#ffffff"/>
+    <rect x="7" y="4" width="2" height="3" fill="#ffffff"/>
+    <rect x="10" y="4" width="2" height="3" fill="#ffffff"/>
+    <rect x="13" y="4" width="2" height="3" fill="#ffffff"/>
+    <rect x="4" y="8" width="2" height="3" fill="#ffffff"/>
+    <rect x="7" y="8" width="2" height="3" fill="#ffffff"/>
+    <rect x="10" y="8" width="2" height="3" fill="#ffffff"/>
+    <rect x="13" y="8" width="2" height="3" fill="#ffffff"/>
+  </g>
+  
+  <!-- Signal Waves -->
+  <g transform="translate(30, 120)">
+    <path d="M5 10 Q10 5 15 10" stroke="#ffffff" stroke-width="2" fill="none"/>
+    <path d="M2 10 Q10 2 18 10" stroke="#ffffff" stroke-width="2" fill="none"/>
+    <path d="M0 10 Q10 0 20 10" stroke="#ffffff" stroke-width="2" fill="none"/>
+  </g>
+  
+  <!-- Text GADIES -->
+  <text x="100" y="170" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="24" font-weight="bold">GADIES</text>
+  
+  <!-- Subtitle -->
+  <text x="100" y="185" text-anchor="middle" fill="#e5e7eb" font-family="Arial, sans-serif" font-size="10">Ertiga Diesel Insights</text>
+</svg>

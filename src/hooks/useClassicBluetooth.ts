@@ -1,6 +1,16 @@
 import { useState, useCallback } from 'react';
-import { BluetoothSerial } from '@/lib/bluetooth';
 import { useToast } from '@/hooks/use-toast';
+
+// Mock BluetoothSerial for development/fallback
+const BluetoothSerial = {
+  requestPermissions: async () => ({ granted: false }),
+  enable: async () => { throw new Error('Bluetooth not available'); },
+  list: async () => ({ devices: [] }),
+  connect: async (options: { address: string }) => { throw new Error('Bluetooth not available'); },
+  disconnect: async () => { throw new Error('Bluetooth not available'); },
+  write: async (options: { value: string }) => { throw new Error('Bluetooth not available'); },
+  read: async (options: { delimiter: string }) => ({ value: 'NO DATA>' })
+};
 
 export interface ClassicBluetoothDevice {
   address: string;

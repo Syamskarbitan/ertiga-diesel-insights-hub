@@ -1,0 +1,45 @@
+{
+  "appId": "com.gadies.ertigadieselinsights",
+  "appName": "GADIES - Ertiga Diesel Insights",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "allowMixedContent": true,
+    "captureInput": true,
+    "webContentsDebuggingEnabled": true
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 2000,
+      "launchAutoHide": true,
+      "backgroundColor": "#ffffff",
+      "androidSplashResourceName": "splash",
+      "androidScaleType": "CENTER_CROP",
+      "showSpinner": false,
+      "androidSpinnerStyle": "large",
+      "iosSpinnerStyle": "small",
+      "spinnerColor": "#1e40af",
+      "splashFullScreen": true,
+      "splashImmersive": true
+    },
+    "StatusBar": {
+      "style": "DARK",
+      "backgroundColor": "#1e40af"
+    },
+    "Keyboard": {
+      "resize": "body",
+      "style": "DARK",
+      "resizeOnFullScreen": true
+    },
+    "BluetoothLe": {
+      "displayStrings": {
+        "scanning": "Scanning for ELM327 devices...",
+        "cancel": "Cancel",
+        "availableDevices": "Available ELM327 Devices",
+        "noDeviceFound": "No ELM327 devices found"
+      }
+    }
+  }
+}

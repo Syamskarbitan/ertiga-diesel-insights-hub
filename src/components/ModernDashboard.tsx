@@ -300,7 +300,7 @@ export const ModernDashboard = () => {
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-3">
                 <img 
-                  src="/lovable-uploads/3125d971-3639-4b49-9be1-c74769a884f4.png" 
+                  src="/gadies-logo.png" 
                   alt="GADIES Logo" 
                   className="h-12 w-auto drop-shadow-md"
                 />

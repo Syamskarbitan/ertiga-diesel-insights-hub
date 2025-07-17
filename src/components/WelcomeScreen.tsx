@@ -69,7 +69,7 @@ export const WelcomeScreen: React.FC = () => {
         <div className="text-center">
           <div className="mx-auto w-1/2 max-w-sm mb-8">
             <img
-              src="/lovable-uploads/3125d971-3639-4b49-9be1-c74769a884f4.png"
+              src="/gadies-logo.png"
               alt="GADIES Logo"
               className="w-full h-auto object-contain drop-shadow-2xl"
             />

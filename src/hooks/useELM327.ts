@@ -239,6 +239,7 @@ export const useELM327 = () => {
     scanBluetoothDevices,
     addWiFiDevice,
     connectDevice,
+    sendCommand: currentDevice?.type === 'bluetooth' ? sendCommand : null,
 
     disconnect,
   };
