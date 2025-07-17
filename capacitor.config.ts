@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.gadies.ertigadieselinsights',
-  appName: 'GADIES - Ertiga Diesel Insights',
+  appName: 'ertiGA-DiESel Jatim by Samsul',
   webDir: 'dist',
   server: {
     androidScheme: 'https'
@@ -30,7 +30,7 @@ const config: CapacitorConfig = {
     SplashScreen: {
       launchShowDuration: 2000,
       launchAutoHide: true,
-      backgroundColor: "#1e40af",
+      backgroundColor: "#FFC107",
       androidSplashResourceName: "splash",
       showSpinner: true,
       spinnerColor: "#ffffff",
@@ -40,7 +40,7 @@ const config: CapacitorConfig = {
     },
     StatusBar: {
       style: "DARK",
-      backgroundColor: "#FF6B35"
+      backgroundColor: "#FFC107"
     },
     Keyboard: {
       resize: "body",

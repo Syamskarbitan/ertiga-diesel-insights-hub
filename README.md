@@ -1,4 +1,4 @@
-# GADIES - Ertiga Diesel Insights Hub
+# GADIES - ertiGA-DiESel Jatim by Samsul
 
 A comprehensive OBD-II diagnostic application specifically designed for Suzuki Ertiga Diesel vehicles.
 
@@ -53,26 +53,54 @@ A comprehensive OBD-II diagnostic application specifically designed for Suzuki E
 - **Frontend**: React 18 with TypeScript
 - **UI Framework**: Tailwind CSS + Radix UI
 - **Mobile**: Capacitor for Android native features
-- **Bluetooth**: @capgo/bluetooth-serial for classic Bluetooth
+- **Bluetooth**: Capacitor Bluetooth LE for device communication
 - **Charts**: Recharts for data visualization
 - **Build Tool**: Vite
 
 ## Installation
 
+### Method 1: Using Automated Scripts
 1. Clone the repository
 2. Install dependencies:
    ```bash
    npm install
    ```
-3. Sync with Android:
+3. Run the build script:
+   
+   For Windows:
+   ```bash
+   build-android.bat
+   ```
+   
+   For macOS/Linux:
+   ```bash
+   chmod +x build-android.sh
+   ./build-android.sh
+   ```
+
+### Method 2: Manual Steps
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Build the web assets:
+   ```bash
+   npm run build
+   ```
+4. Sync with Android:
    ```bash
    npx cap sync android
    ```
-4. Open in Android Studio:
+5. Build Android APK:
    ```bash
-   npx cap open android
+   cd android
+   ./gradlew assembleDebug
    ```
-5. Build and install APK
+6. The APK will be available at:
+   ```
+   android/app/build/outputs/apk/debug/app-debug.apk
+   ```
 
 ## Usage
 
