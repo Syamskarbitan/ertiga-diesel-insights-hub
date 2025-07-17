@@ -21,7 +21,7 @@ import {
 
 export const WelcomeScreen: React.FC = () => {
   const { devices, currentDevice, isScanning, isConnecting, isConnected, error, scanDevices, connectDevice, disconnect } = useClassicBluetooth();
-  const { connectDevice: connectWiFi, isConnecting: isWiFiConnecting, error: wifiError } = useWiFiELM327();
+  const { connect: connectWiFi, isConnecting: isWiFiConnecting, currentDevice: wifiDevice } = useWiFiELM327();
 
   const [showConnectionOptions, setShowConnectionOptions] = useState(false);
   const [connectionType, setConnectionType] = useState<'bluetooth' | 'wifi'>('bluetooth');
@@ -67,12 +67,19 @@ export const WelcomeScreen: React.FC = () => {
       <div className="max-w-2xl w-full space-y-8">
         {/* Logo and Title */}
         <div className="text-center">
-          <div className="mx-auto w-1/2 max-w-sm mb-8">
-            <img
-              src="/gadies-logo.png"
-              alt="GADIES Logo"
-              className="w-full h-auto object-contain drop-shadow-2xl"
-            />
+          <div className="mx-auto w-1/2 max-w-sm mb-8 relative">
+            {/* Logo dengan lingkaran hitam untuk tema terang */}
+            <div className={`relative inline-block ${
+              theme === 'light' 
+                ? 'bg-black rounded-full p-4 shadow-2xl' 
+                : 'drop-shadow-2xl'
+            }`}>
+              <img
+                src="/gadies-logo.png"
+                alt="GADIES Logo"
+                className="w-full h-auto object-contain"
+              />
+            </div>
           </div>
           <h1 className="text-6xl font-bold bg-gradient-to-r from-orange-400 to-red-500 bg-clip-text text-transparent mb-3">
             GADIES
@@ -91,22 +98,84 @@ export const WelcomeScreen: React.FC = () => {
             </p>
             
             {!showConnectionOptions ? (
-              <div className="space-y-4">
-                <Button 
-                  onClick={handleBluetoothScan}
-                  className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white border-0 font-semibold py-4 text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-                  size="lg"
-                  disabled={isScanning}
-                >
-                  {isScanning ? (
-                    <Loader2 className="w-6 h-6 mr-3 animate-spin" />
-                  ) : (
-                    <Bluetooth className="w-6 h-6 mr-3" />
-                  )}
-                  {isScanning ? 'Mencari Perangkat...' : 'Cari Perangkat Bluetooth (Paired)'}
-                </Button>
+              <div className="space-y-6">
+                <div className="text-center mb-6">
+                  <h3 className="text-xl font-semibold text-slate-800 dark:text-white mb-2">
+                    Pilih Jenis Koneksi
+                  </h3>
+                  <p className="text-slate-600 dark:text-gray-300">
+                    Pilih cara koneksi ke adapter ELM327 Anda
+                  </p>
+                </div>
                 
-
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Bluetooth Option */}
+                  <Card className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-105 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 border-blue-200 dark:border-blue-700">
+                    <CardContent className="p-6 text-center space-y-4">
+                      <div className="mx-auto w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center">
+                        <Bluetooth className="w-8 h-8 text-white" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-slate-800 dark:text-white mb-2">
+                          Bluetooth Classic
+                        </h4>
+                        <p className="text-sm text-slate-600 dark:text-gray-300 mb-4">
+                          Koneksi langsung ke ELM327 Bluetooth
+                        </p>
+                        <Button 
+                          onClick={handleBluetoothScan}
+                          className="w-full bg-blue-500 hover:bg-blue-600 text-white"
+                          disabled={isScanning}
+                        >
+                          {isScanning ? (
+                            <>
+                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                              Scanning...
+                            </>
+                          ) : (
+                            <>
+                              <Search className="w-4 h-4 mr-2" />
+                              Scan Bluetooth
+                            </>
+                          )}
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  
+                  {/* WiFi Option */}
+                  <Card className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-105 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 border-green-200 dark:border-green-700">
+                    <CardContent className="p-6 text-center space-y-4">
+                      <div className="mx-auto w-16 h-16 bg-green-500 rounded-full flex items-center justify-center">
+                        <Wifi className="w-8 h-8 text-white" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-slate-800 dark:text-white mb-2">
+                          WiFi ELM327
+                        </h4>
+                        <p className="text-sm text-slate-600 dark:text-gray-300 mb-4">
+                          Koneksi melalui WiFi ELM327 adapter
+                        </p>
+                        <Button 
+                          onClick={() => {
+                            setConnectionType('wifi');
+                            setShowConnectionOptions(true);
+                          }}
+                          className="w-full bg-green-500 hover:bg-green-600 text-white"
+                        >
+                          <Cable className="w-4 h-4 mr-2" />
+                          Setup WiFi
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+                
+                <div className="text-center">
+                  <p className="text-sm text-slate-500 dark:text-gray-400">
+                    Pastikan adapter ELM327 sudah terpasang di port OBD-II kendaraan
+                  </p>
+                </div>
               </div>
             ) : (
               <div className="space-y-6">
@@ -225,8 +294,8 @@ export const WelcomeScreen: React.FC = () => {
                 </CardContent>
               </Card>
             )}
-            {(error || wifiError) && (
-              <div className="text-red-600 text-sm mt-2">{error || wifiError}</div>
+            {error && (
+              <div className="text-red-600 text-sm mt-2">{error}</div>
             )}
 
                 <Separator />

@@ -99,7 +99,7 @@ export const useOBDData = () => {
     boostPressure: []
   });
 
-  const intervalRef = useRef<NodeJS.Timeout>();
+  const intervalRef = useRef<number>();
 
   // Parse OBD-II response
   const parseOBDResponse = (pid: string, response: string): number => {
@@ -160,28 +160,37 @@ export const useOBDData = () => {
     return 0;
   };
 
+  // Timeout wrapper for OBD commands
+  const withTimeout = <T>(promise: Promise<T>, timeoutMs: number): Promise<T> => {
+    return Promise.race([
+      promise,
+      new Promise<T>((_, reject) => 
+        setTimeout(() => reject(new Error('Command timeout')), timeoutMs)
+      )
+    ]);
+  };
+
   // Send OBD command and get response
   const sendOBDCommand = async (pid: string): Promise<number> => {
+    if (!sendCommand) {
+      console.warn('No send command function available');
+      return getRealisticValue(pid);
+    }
+    
     try {
-      if (!isConnected || !sendCommand) {
-        console.warn(`OBD not connected, using simulated data for ${pid}`);
+      // Add 3 second timeout for each OBD command
+      const response = await withTimeout(sendCommand(pid), 3000);
+      
+      // Ensure response is a string
+      const responseStr = typeof response === 'string' ? response : String(response);
+      
+      // Check for common error responses
+      if (responseStr.includes('NO DATA') || responseStr.includes('ERROR') || responseStr.includes('?')) {
+        console.warn(`Invalid OBD response for ${pid}: ${responseStr}`);
         return getRealisticValue(pid);
       }
       
-      // Add timeout for OBD commands
-      const timeoutPromise = new Promise<string>((_, reject) => {
-        setTimeout(() => reject(new Error('OBD command timeout')), 5000);
-      });
-      
-      const commandPromise = sendCommand(pid + '\r');
-      const response = await Promise.race([commandPromise, timeoutPromise]) as string;
-      
-      if (!response || response.includes('ERROR') || response.includes('NO DATA')) {
-        console.warn(`Invalid OBD response for ${pid}: ${response}`);
-        return getRealisticValue(pid);
-      }
-      
-      const parsedValue = parseOBDResponse(pid, response);
+      const parsedValue = parseOBDResponse(pid, responseStr);
       
       // Validate parsed value
       if (isNaN(parsedValue) || parsedValue < 0) {

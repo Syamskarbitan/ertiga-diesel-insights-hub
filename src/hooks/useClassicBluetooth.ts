@@ -1,16 +1,21 @@
 import { useState, useCallback } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { BluetoothSerial } from '@capacitor-community/bluetooth-serial';
+import { Capacitor } from '@capacitor/core';
 
-// Mock BluetoothSerial for development/fallback
-const BluetoothSerial = {
+// Fallback mock for web development
+const MockBluetoothSerial = {
   requestPermissions: async () => ({ granted: false }),
-  enable: async () => { throw new Error('Bluetooth not available'); },
+  enable: async () => { throw new Error('Bluetooth not available in web'); },
   list: async () => ({ devices: [] }),
-  connect: async (options: { address: string }) => { throw new Error('Bluetooth not available'); },
-  disconnect: async () => { throw new Error('Bluetooth not available'); },
-  write: async (options: { value: string }) => { throw new Error('Bluetooth not available'); },
+  connect: async (options: { address: string }) => { throw new Error('Bluetooth not available in web'); },
+  disconnect: async () => { throw new Error('Bluetooth not available in web'); },
+  write: async (options: { value: string }) => { throw new Error('Bluetooth not available in web'); },
   read: async (options: { delimiter: string }) => ({ value: 'NO DATA>' })
 };
+
+// Use real BluetoothSerial on native platforms, mock on web
+const bluetoothSerial = Capacitor.isNativePlatform() ? BluetoothSerial : MockBluetoothSerial;
 
 export interface ClassicBluetoothDevice {
   address: string;
@@ -31,12 +36,12 @@ export function useClassicBluetooth() {
     setIsScanning(true);
     setError(null);
     try {
-      const permission = await BluetoothSerial.requestPermissions();
+      const permission = await bluetoothSerial.requestPermissions();
       if (!permission.granted) {
         throw new Error('Bluetooth permission not granted');
       }
-      await BluetoothSerial.enable();
-      const result = await BluetoothSerial.list();
+      await bluetoothSerial.enable();
+      const result = await bluetoothSerial.list();
       setDevices(result.devices);
       toast({
         title: "Scan Complete",
@@ -59,7 +64,7 @@ export function useClassicBluetooth() {
     setIsConnecting(true);
     setError(null);
     try {
-      await BluetoothSerial.connect({ address });
+      await bluetoothSerial.connect({ address });
       setIsConnected(true);
 
       // Initialize ELM327 device
@@ -95,7 +100,7 @@ export function useClassicBluetooth() {
 
   const disconnect = useCallback(async () => {
     try {
-      await BluetoothSerial.disconnect();
+      await bluetoothSerial.disconnect();
       setIsConnected(false);
       setCurrentDevice(null);
       toast({
@@ -118,8 +123,8 @@ export function useClassicBluetooth() {
       throw new Error('Not connected to a device.');
     }
     try {
-      await BluetoothSerial.write({ value: command + '\r' });
-      const result = await BluetoothSerial.read({ delimiter: '>' });
+      await bluetoothSerial.write({ value: command + '\r' });
+      const result = await bluetoothSerial.read({ delimiter: '>' });
       return result.value.trim();
     } catch (e: unknown) {
       const errorMsg = e instanceof Error ? e.message : 'Failed to send command';
