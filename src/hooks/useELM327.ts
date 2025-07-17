@@ -22,6 +22,7 @@ export const useELM327 = () => {
   const [isScanning, setIsScanning] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
+
   const [config, setConfig] = useState<ELM327Config>({
     autoConnect: true,
     connectionTimeout: 10000,
@@ -197,6 +198,8 @@ export const useELM327 = () => {
     });
   };
 
+
+
   // Disconnect from current device
   const disconnect = useCallback(() => {
     if (currentDevice) {
@@ -229,12 +232,14 @@ export const useELM327 = () => {
     isScanning,
     isConnecting,
     isConnected,
+
     isBluetoothSupported,
     config,
     setConfig,
     scanBluetoothDevices,
     addWiFiDevice,
     connectDevice,
+
     disconnect,
   };
 };

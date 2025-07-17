@@ -1,7 +1,7 @@
-import { Dashboard } from '@/components/Dashboard';
+import { ModernDashboard } from '@/components/ModernDashboard';
 
 const Index = () => {
-  return <Dashboard />;
+  return <ModernDashboard />;
 };
 
 export default Index;

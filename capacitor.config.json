@@ -1,0 +1,23 @@
+{
+  "appId": "com.gadies.obdii",
+  "appName": "GADIES",
+  "webDir": "dist",
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 2000,
+      "backgroundColor": "#ffffffff"
+    },
+    "BluetoothLe": {
+      "permissions": {
+        "android": {
+          "permissions": [
+            "android.permission.BLUETOOTH",
+            "android.permission.BLUETOOTH_ADMIN",
+            "android.permission.ACCESS_FINE_LOCATION",
+            "android.permission.ACCESS_COARSE_LOCATION"
+          ]
+        }
+      }
+    }
+  }
+}

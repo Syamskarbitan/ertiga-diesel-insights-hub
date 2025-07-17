@@ -1,87 +1,76 @@
 import React from 'react';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
 
 interface OBDDataCardProps {
   title: string;
-  value: string | number;
+  value: number | string;
   unit?: string;
   icon?: React.ReactNode;
   status?: 'normal' | 'warning' | 'danger';
-  threshold?: {
-    warning: number;
-    danger: number;
-  };
-  className?: string;
 }
 
 export const OBDDataCard: React.FC<OBDDataCardProps> = ({
   title,
   value,
-  unit = '',
+  unit,
   icon,
-  status = 'normal',
-  threshold,
-  className
+  status = 'normal'
 }) => {
-  const getStatusColor = () => {
+  const getStatusStyles = () => {
     switch (status) {
       case 'warning':
-        return 'border-warning bg-warning/10';
+        return {
+          card: 'border-yellow-500/30 bg-yellow-500/5 hover:bg-yellow-500/10',
+          badge: 'bg-yellow-500/20 text-yellow-700 dark:text-yellow-400',
+          icon: '⚠️'
+        };
       case 'danger':
-        return 'border-danger bg-danger/10 animate-pulse-glow';
+        return {
+          card: 'border-red-500/30 bg-red-500/5 hover:bg-red-500/10',
+          badge: 'bg-red-500/20 text-red-700 dark:text-red-400',
+          icon: '🔴'
+        };
       default:
-        return 'border-border';
+        return {
+          card: 'border-green-500/30 bg-green-500/5 hover:bg-green-500/10',
+          badge: 'bg-green-500/20 text-green-700 dark:text-green-400',
+          icon: '✅'
+        };
     }
   };
 
-  const getValueColor = () => {
-    switch (status) {
-      case 'warning':
-        return 'text-warning';
-      case 'danger':
-        return 'text-danger';
-      default:
-        return 'text-primary';
-    }
-  };
+  const statusStyles = getStatusStyles();
 
   return (
-    <Card className={cn(
-      "p-4 transition-all duration-300 hover:shadow-glow",
-      getStatusColor(),
-      className
-    )}>
-      <div className="flex items-center justify-between mb-2">
-        <h3 className="text-sm font-medium text-muted-foreground">{title}</h3>
-        {icon && (
-          <div className="text-muted-foreground">
-            {icon}
-          </div>
-        )}
-      </div>
-      
-      <div className="flex items-baseline gap-1">
-        <span className={cn(
-          "text-2xl font-bold",
-          getValueColor()
-        )}>
-          {value}
-        </span>
-        {unit && (
-          <span className="text-sm text-muted-foreground">{unit}</span>
-        )}
-      </div>
-      
-      {status !== 'normal' && (
-        <Badge 
-          variant={status === 'warning' ? 'secondary' : 'destructive'}
-          className="mt-2 text-xs"
-        >
-          {status === 'warning' ? 'Warning' : 'Critical'}
+    <Card className={`${statusStyles.card} border-2 transition-all duration-300 hover:shadow-lg card-hover glass-effect`}>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-sm font-medium flex items-center gap-2">
+          {icon}
+          {title}
+        </CardTitle>
+        <Badge className={`${statusStyles.badge} text-xs px-2 py-1`}>
+          {statusStyles.icon}
         </Badge>
-      )}
+      </CardHeader>
+      <CardContent>
+        <div className="text-2xl font-bold flex items-baseline gap-1">
+          <span className="tabular-nums">{value}</span>
+          {unit && (
+            <span className="text-sm font-normal text-muted-foreground">
+              {unit}
+            </span>
+          )}
+        </div>
+        {status !== 'normal' && (
+          <Badge 
+            variant={status === 'warning' ? 'secondary' : 'destructive'}
+            className="mt-2 text-xs"
+          >
+            {status === 'warning' ? 'Warning' : 'Critical'}
+          </Badge>
+        )}
+      </CardContent>
     </Card>
   );
 };
