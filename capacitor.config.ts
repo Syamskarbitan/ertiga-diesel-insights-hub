@@ -21,12 +21,6 @@ const config: CapacitorConfig = {
         noDeviceFound: "No ELM327 devices found"
       }
     },
-    BluetoothSerial: {
-      connectTimeout: 10000,
-      readTimeout: 5000,
-      writeTimeout: 5000,
-      delimiter: "\r\n"
-    },
     SplashScreen: {
       launchShowDuration: 2000,
       launchAutoHide: true,
